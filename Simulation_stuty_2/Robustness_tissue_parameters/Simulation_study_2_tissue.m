@@ -180,7 +180,7 @@ targets = [1, fileID];
 
 for fid = targets
     print_both(fid, '\n--- Observed Signal Statistics ---\n');
-    print_both(fid, 'Rdosl (R1rho): Mean = %.4f Hz, Std = %.4f Hz\n', Stats.Rdosl.mean, Stats.Rdosl.std);
+    print_both(fid, 'Rdosl: Mean = %.4f Hz, Std = %.4f Hz\n', Stats.Rdosl.mean, Stats.Rdosl.std);
     
     print_both(fid, '\n--- T1d Estimation Performance Analysis ---\n');
     print_both(fid, '\n================================================================\n');
@@ -199,4 +199,5 @@ end
 
 fclose(fileID); % Close the file
 fprintf('\nResults saved to: %s\n', output_filename);
+
 
