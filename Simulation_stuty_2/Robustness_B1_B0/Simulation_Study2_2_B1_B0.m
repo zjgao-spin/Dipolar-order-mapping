@@ -1,6 +1,6 @@
 % -------------------------------------------------------------------------
-% Script:       T1D_Estimation.m
-% Authors:      Zijian Gao,Weitian Chen
+% Script:       Simulation_study2_2_B1_B0.m
+% Authors:      Zijian Gao,Qianxue Shan,Weitian Chen
 % Email:        zijian.gao@link.cuhk.edu.hk
 % Date:         2025-12-20
 % Version:      1.0
@@ -206,4 +206,5 @@ stats_B0_dic = calc_stats(Results_MC.B0ih.T1d_Dic, T1d_base);
 fprintf('%-20s | %-12s | %-12s | %-12s\n', 'Scenario', 'Mean (ms)', 'Std (ms)', 'Error (%)');
 fprintf('----------------------------------------------------------------\n');
 fprintf('%-20s | %-12.4f | %-12.4f | %-12.2f%%\n', 'Analyt (B0 Ignored)', stats_B0_ana.mean*1e3, stats_B0_ana.std*1e3, stats_B0_ana.error_pct);
+
 fprintf('%-20s | %-12.4f | %-12.4f | %-12.2f%%\n', 'Dict (B0 Ignored)', stats_B0_dic.mean*1e3, stats_B0_dic.std*1e3, stats_B0_dic.error_pct);
