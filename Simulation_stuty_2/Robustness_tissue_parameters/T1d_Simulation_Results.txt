@@ -1,6 +1,6 @@
 
 --- Observed Signal Statistics ---
-Rdosl (R1rho): Mean = 0.4109 Hz, Std = 0.0238 Hz
+Rdosl: Mean = 0.4109 Hz, Std = 0.0238 Hz
 
 --- T1d Estimation Performance Analysis ---
 
