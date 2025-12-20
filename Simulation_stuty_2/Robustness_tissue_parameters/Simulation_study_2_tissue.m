@@ -1,6 +1,6 @@
 % -------------------------------------------------------------------------
-% Script:       T1D_Estimation.m
-% Authors:      Zijian Gao,Weitian Chen
+% Script:       Simulation_study2_tissue.m
+% Authors:      Zijian Gao,Qianxue Shan,Weitian Chen
 % Email:        zijian.gao@link.cuhk.edu.hk
 % Date:         2025-12-20
 % Version:      1.0
@@ -199,3 +199,4 @@ end
 
 fclose(fileID); % Close the file
 fprintf('\nResults saved to: %s\n', output_filename);
+
