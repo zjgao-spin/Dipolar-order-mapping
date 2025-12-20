@@ -5,7 +5,7 @@
 % Date:         2025-12-19
 % Version:      1.0
 %
-% Copyright (c) 2025  ZZijian Gao, Qianxue Shan, Weitian Chen. All rights reserved.
+% Copyright (c) 2025  Zijian Gao, Qianxue Shan, Weitian Chen. All rights reserved.
 %
 % License:
 %   Strictly for academic/research use only. Commercial use, redistribution,
@@ -145,4 +145,5 @@ fprintf('Mean Abs. Error:  %.2f ± %.2f ms\n', mean(absolute_error(:),'omitnan')
 %% 4. Visualization
 
 % Call external script to plot the results
+
 Simulation_study1_2_plot
