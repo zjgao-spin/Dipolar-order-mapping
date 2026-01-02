@@ -70,7 +70,7 @@ fig_pos = [left_pos, bottom_pos, fig_width, fig_height];
 fs_title  = 26;
 fs_label  = 30;
 fs_legend = 14;
-fs_tick   = 16;
+fs_tick   = 22;
 
 % Define Line Properties
 lw_plot = 2;      % Line width for data curves
@@ -94,12 +94,12 @@ for i = 1:length(w1_for_dw_idx)
 end
 plot(dw_vals_Hz, repmat(T1D_true_ms, size(dw_vals_Hz)), '--k', 'LineWidth', lw_plot);
 
-xlabel('Frequency Offset $\Delta\omega/2\pi$ (Hz)', 'FontSize', fs_label);
+xlabel('Frequency Offset $\Delta\omega^{d(1)}/2\pi$ (Hz)', 'FontSize', fs_label);
 ylabel('Estimated $T_{1D}$ (ms)', 'FontSize', fs_label);
-legend_str = arrayfun(@(x) sprintf('$\\omega_1/2\\pi = %d\\,\\mathrm{Hz}$', x), w1_vals_Hz(w1_for_dw_idx), 'UniformOutput', false);
+legend_str = arrayfun(@(x) sprintf('$\\omega_1^{d(1)}/2\\pi = %d\\,\\mathrm{Hz}$', x), w1_vals_Hz(w1_for_dw_idx), 'UniformOutput', false);
 legend([legend_str, {'Ground Truth'}], 'FontSize', fs_legend, 'Location', 'best');
 
-title(sprintf('Estimated $T_{1D}$ vs $\\Delta\\omega$ (TSL = %d ms)', round(TSL_vals_ms(tsl_ref_idx))), 'FontSize', fs_title);
+title(sprintf('Estimated $T_{1D}$ vs $\\Delta\\omega^{d(1)}$ (TSL = %d ms)', round(TSL_vals_ms(tsl_ref_idx))), 'FontSize', fs_title);
 xlim([min(dw_vals_Hz) max(dw_vals_Hz)]); ylim([0 10]);
 
 % Style adjustments (Grid, Box, Ticks)
@@ -120,12 +120,12 @@ for i = 1:length(dw_for_w1_idx)
 end
 plot(w1_vals_Hz, repmat(T1D_true_ms, size(w1_vals_Hz)), '--k', 'LineWidth', lw_plot);
 
-xlabel('RF Amplitude $\omega_1/2\pi$ (Hz)', 'FontSize', fs_label);
+xlabel('RF Amplitude $\omega_1^{d(1)}/2\pi$ (Hz)', 'FontSize', fs_label);
 ylabel('Estimated $T_{1D}$ (ms)', 'FontSize', fs_label);
-legend_str = arrayfun(@(x) sprintf('$\\Delta\\omega/2\\pi = %d\\,\\mathrm{Hz}$', x), dw_vals_Hz(dw_for_w1_idx), 'UniformOutput', false);
+legend_str = arrayfun(@(x) sprintf('$\\Delta\\omega^{d(1)}/2\\pi = %d\\,\\mathrm{Hz}$', x), dw_vals_Hz(dw_for_w1_idx), 'UniformOutput', false);
 legend([legend_str, {'Ground Truth'}], 'FontSize', fs_legend, 'Location', 'best');
 
-title(sprintf('Estimated $T_{1D}$ vs $\\omega_1$ (TSL = %d ms)', round(TSL_vals_ms(tsl_ref_idx))), 'FontSize', fs_title);
+title(sprintf('Estimated $T_{1D}$ vs $\\omega_1^{d(1)}$ (TSL = %d ms)', round(TSL_vals_ms(tsl_ref_idx))), 'FontSize', fs_title);
 xlim([min(w1_vals_Hz) max(w1_vals_Hz)]); ylim([0 10]);
 
 grid on; box on;
@@ -144,12 +144,12 @@ for i = 1:length(w1_for_dw_idx)
         'LineWidth', lw_plot, 'Color', colors{i}, 'MarkerSize', ms_size);
 end
 
-xlabel('Frequency Offset $\Delta\omega/2\pi$ (Hz)', 'FontSize', fs_label);
+xlabel('Frequency Offset $\Delta\omega^{d(1)}/2\pi$ (Hz)', 'FontSize', fs_label);
 ylabel('$T_{1D}$ Relative Error (\%)', 'FontSize', fs_label);
-legend_str = arrayfun(@(x) sprintf('$\\omega_1/2\\pi = %d\\,\\mathrm{Hz}$', x), w1_vals_Hz(w1_for_dw_idx), 'UniformOutput', false);
+legend_str = arrayfun(@(x) sprintf('$\\omega_1^{d(1)}/2\\pi = %d\\,\\mathrm{Hz}$', x), w1_vals_Hz(w1_for_dw_idx), 'UniformOutput', false);
 legend(legend_str, 'FontSize', fs_legend, 'Location', 'best');
 
-title(sprintf('Relative Error vs $\\Delta\\omega$ (TSL = %d ms)', round(TSL_vals_ms(tsl_ref_idx))), 'FontSize', fs_title);
+title(sprintf('Relative Error vs $\\Delta\\omega^{d(1)}$ (TSL = %d ms)', round(TSL_vals_ms(tsl_ref_idx))), 'FontSize', fs_title);
 xlim([min(dw_vals_Hz) max(dw_vals_Hz)]); ylim([0 30]);
 
 grid on; box on;
@@ -168,12 +168,12 @@ for i = 1:length(dw_for_w1_idx)
         'LineWidth', lw_plot, 'Color', colors{i}, 'MarkerSize', ms_size);
 end
 
-xlabel('RF Amplitude $\omega_1/2\pi$ (Hz)', 'FontSize', fs_label);
+xlabel('RF Amplitude $\omega_1^{d(1)}/2\pi$ (Hz)', 'FontSize', fs_label);
 ylabel('$T_{1D}$ Relative Error (\%)', 'FontSize', fs_label);
-legend_str = arrayfun(@(x) sprintf('$\\Delta\\omega/2\\pi = %d\\,\\mathrm{Hz}$', x), dw_vals_Hz(dw_for_w1_idx), 'UniformOutput', false);
+legend_str = arrayfun(@(x) sprintf('$\\Delta\\omega^{d(1)}/2\\pi = %d\\,\\mathrm{Hz}$', x), dw_vals_Hz(dw_for_w1_idx), 'UniformOutput', false);
 legend(legend_str, 'FontSize', fs_legend, 'Location', 'best');
 
-title(sprintf('Relative Error vs $\\omega_1$ (TSL = %d ms)', round(TSL_vals_ms(tsl_ref_idx))), 'FontSize', fs_title);
+title(sprintf('Relative Error vs $\\omega_1^{d(1)}$ (TSL = %d ms)', round(TSL_vals_ms(tsl_ref_idx))), 'FontSize', fs_title);
 xlim([min(w1_vals_Hz) max(w1_vals_Hz)]); ylim([0 30]);
 
 grid on; box on;
@@ -195,10 +195,10 @@ plot(TSL_vals_ms, repmat(T1D_true_ms, size(TSL_vals_ms)), '--k', 'LineWidth', lw
 
 xlabel('Time of Spin-Lock (ms)', 'FontSize', fs_label);
 ylabel('Estimated $T_{1D}$ (ms)', 'FontSize', fs_label);
-legend_str = arrayfun(@(x) sprintf('$\\Delta\\omega/2\\pi = %d\\,\\mathrm{Hz}$', x), dw_vals_Hz(dw_for_tsl_idx), 'UniformOutput', false);
+legend_str = arrayfun(@(x) sprintf('$\\Delta\\omega^{d(1)}/2\\pi = %d\\,\\mathrm{Hz}$', x), dw_vals_Hz(dw_for_tsl_idx), 'UniformOutput', false);
 legend([legend_str, {'Ground Truth'}], 'FontSize', fs_legend, 'Location', 'best');
 
-title(sprintf('Estimated $T_{1D}$ vs TSL ($\\omega_1/2\\pi = %d$ Hz)', round(w1_vals_Hz(w1_for_tsl_idx))), 'FontSize', fs_title);
+title(sprintf('Estimated $T_{1D}$ vs TSL ($\\omega_1^{d(1)}/2\\pi = %d$ Hz)', round(w1_vals_Hz(w1_for_tsl_idx))), 'FontSize', fs_title);
 xlim([50 120]); ylim([0 10]);
 
 grid on; box on;
@@ -219,10 +219,10 @@ end
 
 xlabel('Time of Spin-Lock (ms)', 'FontSize', fs_label);
 ylabel('$T_{1D}$ Relative Error (\%)', 'FontSize', fs_label);
-legend_str = arrayfun(@(x) sprintf('$\\Delta\\omega/2\\pi = %d\\,\\mathrm{Hz}$', x), dw_vals_Hz(dw_for_tsl_idx), 'UniformOutput', false);
+legend_str = arrayfun(@(x) sprintf('$\\Delta\\omega^{d(1)}/2\\pi = %d\\,\\mathrm{Hz}$', x), dw_vals_Hz(dw_for_tsl_idx), 'UniformOutput', false);
 legend(legend_str, 'FontSize', fs_legend, 'Location', 'best');
 
-title(sprintf('Relative Error vs TSL ($\\omega_1/2\\pi = %d$ Hz)', round(w1_vals_Hz(w1_for_tsl_idx))), 'FontSize', fs_title);
+title(sprintf('Relative Error vs TSL ($\\omega_1^{d(1)}/2\\pi = %d$ Hz)', round(w1_vals_Hz(w1_for_tsl_idx))), 'FontSize', fs_title);
 xlim([50 120]); ylim([0 30]);
 
 grid on; box on;

@@ -17,7 +17,7 @@
 %   T1D (Dipolar Relaxation Time) estimation.
 % 
 % Dependencies:
-%   - cal_Rdosl_acquired.m
+%   - cal_RATIO_dosl_acquired.m
 %   - cal_T1d_analytical.m
 %   - Simulation_study1_2_plot.m
 % -------------------------------------------------------------------------
@@ -77,9 +77,9 @@ n_w1  = length(w1_vals_Hz);
 n_tsl = length(TSL_vals_ms);
 
 % Pre-allocate arrays for speed
-% Rdosl_acquired: Stores the synthetic observed relaxation rate
+% RATIO_dosl_acquired: Stores the synthetic observed relaxation rate
 % T1D_est: Stores the recovered T1D parameter
-Rdosl_acquired = zeros(n_tsl, n_w1, n_dw);
+RATIO_dosl_acquired = zeros(n_tsl, n_w1, n_dw);
 T1D_est        = zeros(n_tsl, n_w1, n_dw); 
 
 %% 2. Simulation and Estimation Loop
@@ -101,22 +101,22 @@ for i_tsl = 1:n_tsl
             % ---------------------------------------------------------
             % Step 1: Generate Synthetic Data (Forward Model)
             % ---------------------------------------------------------
-            % Calculate the theoretical R1rho dispersion (Rdosl) based on 
+            % Calculate the theoretical RATIO_dosl based on 
             % the defined tissue parameters and current experimental setup.
-            Rdosl = cal_Rdosl_acquired(R1a_base, R2a_base, R1b_base, MPF_base, ...
+            RATIO_dosl = cal_RATIO_dosl_acquired(R1a_base, R2a_base, R1b_base, MPF_base, ...
                                        R_base, T2b_base, T1d_base, ...
                                        curr_dw, curr_w1, curr_TSL, B1, B0);
                                    
             % Store the "acquired" data point
-            Rdosl_acquired(i_tsl, i_w1, i_dw) = Rdosl;
+            RATIO_dosl_acquired(i_tsl, i_w1, i_dw) = RATIO_dosl;
             
             % ---------------------------------------------------------
             % Step 2: Estimate Parameter (Inverse Model)
             % ---------------------------------------------------------
-            % Attempt to estim T1D from the synthetic Rdosl value using 
+            % Attempt to estim T1D from the synthetic RATIO_dosl value using 
             % the analytical formula. This tests the validity of the 
             % analytical approximation.
-            [T1d_val, ~] = cal_T1d_analytical(Rdosl, B1, B0, 'w1', curr_w1, 'dw', curr_dw);
+            [T1d_val, ~] = cal_T1d_analytical(RATIO_dosl, B1, B0, 'w1', curr_w1, 'dw', curr_dw);
             
             % Store the estimated parameter
             T1D_est(i_tsl, i_w1, i_dw) = T1d_val;
@@ -145,5 +145,4 @@ fprintf('Mean Abs. Error:  %.2f ± %.2f ms\n', mean(absolute_error(:),'omitnan')
 %% 4. Visualization
 
 % Call external script to plot the results
-
 Simulation_study1_2_plot
