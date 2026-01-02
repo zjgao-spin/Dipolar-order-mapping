@@ -18,8 +18,8 @@
 %   inhomogeneities
 % 
 % Dependencies:
-%   - T1d_dictionary_B1_2025-11-27.mat (Pre-calculated dictionary)
-%   - cal_Rdosl_acquired.m      (Forward model function)
+%   - T1d_dictionary_B1_2025-11-27.mat (Pre-calculated dictionary,Please use this link to download:https://1drv.ms/u/c/68bf0c151d0945e1/IQCxoAdADHPtSJMs1BUf7mpvAcoEhSlpf3Z-z0MJaVM_mmY?e=dydoke)
+%   - cal_RATIO_dosl_acquired.m      (Forward model function)
 %   - cal_T1d_analytical.m      (Inverse analytical function)
 %   - cal_T1d_dictionary.m      (Inverse dictionary function)
 % -------------------------------------------------------------------------
@@ -78,9 +78,9 @@ B0_rand = range_B0(1) + (range_B0(2)-range_B0(1)) * rand(num_sims, 1);
 % Pre-allocate memory for results to improve speed
 Results_MC = struct();
 
-% Intermediate R1rho (Rdosl) values
-Results_MC.Rdosl.B1ihn = zeros(1, num_sims);
-Results_MC.Rdosl.B0ihn = zeros(1, num_sims);
+% Intermediate R1rho (RATIO_dosl) values
+Results_MC.RATIO_dosl.B1ihn = zeros(1, num_sims);
+Results_MC.RATIO_dosl.B0ihn = zeros(1, num_sims);
 
 % T1d Estimation Results
 Results_MC.B1ih.T1d_Analyt.B1cor   = zeros(1, num_sims);
@@ -104,19 +104,19 @@ for i = 1:num_sims
     p_B0 = B0_rand(i)*2*pi;
 
     % ---------------------------------------------------------------------
-    % A. Forward Model: Generate "Observed" R1rho (Rdosl)
+    % A. Forward Model: Generate "Observed" R1rho (RATIO_dosl)
     % ---------------------------------------------------------------------
-    % Calculate Rdosl with B1 inhomogeneity (B0 is ideal)
-    Rdosl_B1ihn = cal_Rdosl_acquired(R1a_base, R2a_base, R1b_base, MPF_base, R_base, ...
+    % Calculate RATIO_dosl with B1 inhomogeneity (B0 is ideal)
+    RATIO_dosl_B1ihn = cal_RATIO_dosl_acquired(R1a_base, R2a_base, R1b_base, MPF_base, R_base, ...
                                      T2b_base, T1d_base, dw_base, w1_base, TSL, p_B1, p_B0);
     
-    % Calculate Rdosl with B0 inhomogeneity (B1 is ideal)
-    Rdosl_B0ihn = cal_Rdosl_acquired(R1a_base, R2a_base, R1b_base, MPF_base, R_base, ...
+    % Calculate RATIO_dosl with B0 inhomogeneity (B1 is ideal)
+    RATIO_dosl_B0ihn = cal_RATIO_dosl_acquired(R1a_base, R2a_base, R1b_base, MPF_base, R_base, ...
                                      T2b_base, T1d_base, dw_base, w1_base, TSL, B1_base, p_B0);
     
     % Store observed rates
-    Results_MC.Rdosl.B1ihn(i) = Rdosl_B1ihn;
-    Results_MC.Rdosl.B0ihn(i) = Rdosl_B0ihn;
+    Results_MC.RATIO_dosl.B1ihn(i) = RATIO_dosl_B1ihn;
+    Results_MC.RATIO_dosl.B0ihn(i) = RATIO_dosl_B0ihn;
 
     % ---------------------------------------------------------------------
     % B. Inverse Model: Estimate T1d under B1 Inhomogeneity
@@ -125,18 +125,18 @@ for i = 1:num_sims
     % Scenario 1: B1 Corrected (We know the true B1)
     B1_known = p_B1;
 
-    [T1d_val, ~] = cal_T1d_analytical(Rdosl_B1ihn, B1_known, B0_base);
+    [T1d_val, ~] = cal_T1d_analytical(RATIO_dosl_B1ihn, B1_known, B0_base);
     Results_MC.B1ih.T1d_Analyt.B1cor(i) = T1d_val;   
 
-    T1D_dic_val = cal_T1d_dictionary(Rdosl_B1ihn, B1_known, dictionary);
+    T1D_dic_val = cal_T1d_dictionary(RATIO_dosl_B1ihn, B1_known, dictionary);
     Results_MC.B1ih.T1d_Dic.B1cor(i) = T1D_dic_val; 
 
     % Scenario 2: B1 Uncorrected (We assume B1 is nominal 1.0)
     B1_assumed = B1_base; 
-    [T1d_val, ~] = cal_T1d_analytical(Rdosl_B1ihn, B1_assumed, B0_base);
+    [T1d_val, ~] = cal_T1d_analytical(RATIO_dosl_B1ihn, B1_assumed, B0_base);
     Results_MC.B1ih.T1d_Analyt.B1uncor(i) = T1d_val;   
 
-    T1D_dic_val = cal_T1d_dictionary(Rdosl_B1ihn, B1_assumed, dictionary);
+    T1D_dic_val = cal_T1d_dictionary(RATIO_dosl_B1ihn, B1_assumed, dictionary);
     Results_MC.B1ih.T1d_Dic.B1uncor(i) = T1D_dic_val; 
 
     % ---------------------------------------------------------------------
@@ -146,10 +146,10 @@ for i = 1:num_sims
     B0_assumed = B0_base; 
     B1_nominal = B1_base;
     
-    [T1d_val, ~] = cal_T1d_analytical(Rdosl_B0ihn, B1_nominal, B0_assumed);
+    [T1d_val, ~] = cal_T1d_analytical(RATIO_dosl_B0ihn, B1_nominal, B0_assumed);
     Results_MC.B0ih.T1d_Analyt(i) = T1d_val;   
 
-    T1D_dic_val = cal_T1d_dictionary(Rdosl_B0ihn, B1_nominal, dictionary);
+    T1D_dic_val = cal_T1d_dictionary(RATIO_dosl_B0ihn, B1_nominal, dictionary);
     Results_MC.B0ih.T1d_Dic(i) = T1D_dic_val; 
     
 end
@@ -162,17 +162,17 @@ toc; % End timer
 % =========================================================================
 
 % --- 4.1 Basic Statistics for Observed Rates ---
-Vals_Rdosl_B1ihn = Results_MC.Rdosl.B1ihn;
-Stats.Rdosl_B1ihn.mean = mean(Vals_Rdosl_B1ihn);
-Stats.Rdosl_B1ihn.std  = std(Vals_Rdosl_B1ihn);
+Vals_RATIO_dosl_B1ihn = Results_MC.RATIO_dosl.B1ihn;
+Stats.RATIO_dosl_B1ihn.mean = mean(Vals_RATIO_dosl_B1ihn);
+Stats.RATIO_dosl_B1ihn.std  = std(Vals_RATIO_dosl_B1ihn);
 
-Vals_Rdosl_B0ihn = Results_MC.Rdosl.B0ihn;
-Stats.Rdosl_B0ihn.mean = mean(Vals_Rdosl_B0ihn);
-Stats.Rdosl_B0ihn.std  = std(Vals_Rdosl_B0ihn);
+Vals_RATIO_dosl_B0ihn = Results_MC.RATIO_dosl.B0ihn;
+Stats.RATIO_dosl_B0ihn.mean = mean(Vals_RATIO_dosl_B0ihn);
+Stats.RATIO_dosl_B0ihn.std  = std(Vals_RATIO_dosl_B0ihn);
 
 fprintf('\n--- Observed R1rho Statistics ---\n');
-fprintf('Rdosl (B1 Inhomogeneity):\n  Mean: %.4f Hz, Std: %.4f Hz\n', Stats.Rdosl_B1ihn.mean, Stats.Rdosl_B1ihn.std);
-fprintf('Rdosl (B0 Inhomogeneity):\n  Mean: %.4f Hz, Std: %.4f Hz\n', Stats.Rdosl_B0ihn.mean, Stats.Rdosl_B0ihn.std);
+fprintf('RATIO_dosl (B1 Inhomogeneity):\n  Mean: %.4f Hz, Std: %.4f Hz\n', Stats.RATIO_dosl_B1ihn.mean, Stats.RATIO_dosl_B1ihn.std);
+fprintf('RATIO_dosl (B0 Inhomogeneity):\n  Mean: %.4f Hz, Std: %.4f Hz\n', Stats.RATIO_dosl_B0ihn.mean, Stats.RATIO_dosl_B0ihn.std);
 
 % --- 4.2 T1d Error Analysis ---
 fprintf('\n================================================\n');
