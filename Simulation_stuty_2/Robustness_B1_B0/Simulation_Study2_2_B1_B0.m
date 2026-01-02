@@ -1,11 +1,11 @@
 % -------------------------------------------------------------------------
-% Script:       Simulation_study2_2_B1_B0.m
-% Authors:      Zijian Gao,Qianxue Shan,Weitian Chen
+% Script:       T1D_Estimation.m
+% Authors:      Zijian Gao,Weitian Chen
 % Email:        zijian.gao@link.cuhk.edu.hk
 % Date:         2025-12-20
 % Version:      1.0
 %
-% Copyright (c) 2025  ZZijian Gao, Qianxue Shan, Weitian Chen. All rights reserved.
+% Copyright (c) 2025  Zijian Gao, Qianxue Shan, Weitian Chen. All rights reserved.
 %
 % License:
 %   Strictly for academic/research use only. Commercial use, redistribution,
@@ -27,6 +27,8 @@ clc
 clear all
 close all
 
+% Add path to helper functions
+addpath('..\..\Function\')
 % Load the pre-calculated dictionary
 dictionary = load('T1d_dictionary_B1_2025-11-27.mat');
 
@@ -55,7 +57,7 @@ B1_base = 1;            % Nominal B1 (normalized)
 B0_base = 0;            % Nominal B0 (Hz)
 
 % Simulation Ranges
-range_B1 = [0.8, 1.3];  % B1 inhomogeneity range (normalized units)
+range_B1 = [0.7, 1.3];  % B1 inhomogeneity range (normalized units)
 range_B0 = [-100, 100]; % B0 off-resonance range (Hz)
 
 % Spin-Lock Parameters
@@ -99,14 +101,14 @@ for i = 1:num_sims
     
     % Get current random parameters
     p_B1 = B1_rand(i);
-    p_B0 = B0_rand(i);
+    p_B0 = B0_rand(i)*2*pi;
 
     % ---------------------------------------------------------------------
     % A. Forward Model: Generate "Observed" R1rho (Rdosl)
     % ---------------------------------------------------------------------
     % Calculate Rdosl with B1 inhomogeneity (B0 is ideal)
     Rdosl_B1ihn = cal_Rdosl_acquired(R1a_base, R2a_base, R1b_base, MPF_base, R_base, ...
-                                     T2b_base, T1d_base, dw_base, w1_base, TSL, p_B1, B0_base);
+                                     T2b_base, T1d_base, dw_base, w1_base, TSL, p_B1, p_B0);
     
     % Calculate Rdosl with B0 inhomogeneity (B1 is ideal)
     Rdosl_B0ihn = cal_Rdosl_acquired(R1a_base, R2a_base, R1b_base, MPF_base, R_base, ...
@@ -122,6 +124,7 @@ for i = 1:num_sims
     
     % Scenario 1: B1 Corrected (We know the true B1)
     B1_known = p_B1;
+
     [T1d_val, ~] = cal_T1d_analytical(Rdosl_B1ihn, B1_known, B0_base);
     Results_MC.B1ih.T1d_Analyt.B1cor(i) = T1d_val;   
 
@@ -206,5 +209,4 @@ stats_B0_dic = calc_stats(Results_MC.B0ih.T1d_Dic, T1d_base);
 fprintf('%-20s | %-12s | %-12s | %-12s\n', 'Scenario', 'Mean (ms)', 'Std (ms)', 'Error (%)');
 fprintf('----------------------------------------------------------------\n');
 fprintf('%-20s | %-12.4f | %-12.4f | %-12.2f%%\n', 'Analyt (B0 Ignored)', stats_B0_ana.mean*1e3, stats_B0_ana.std*1e3, stats_B0_ana.error_pct);
-
 fprintf('%-20s | %-12.4f | %-12.4f | %-12.2f%%\n', 'Dict (B0 Ignored)', stats_B0_dic.mean*1e3, stats_B0_dic.std*1e3, stats_B0_dic.error_pct);
