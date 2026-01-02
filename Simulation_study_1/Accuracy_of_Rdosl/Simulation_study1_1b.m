@@ -1,5 +1,5 @@
 % -------------------------------------------------------------------------
-% Script:       Rdosl_Sensitivity_Analysis.m
+% Script:       RATIO_dosl_Sensitivity_Analysis.m
 % Authors:      Zijian Gao; Qianxue Shan, Weitian Chen
 % Email:        zijian.gao@link.cuhk.edu.hk
 % Date:         2025-12-19
@@ -13,7 +13,7 @@
 %   permission. Modification of this header is forbidden.
 %
 % Description:
-%   Analyzes the sensitivity of the dipolar order saturation rate (Rdosl)
+%   Analyzes the sensitivity of the dipolar order saturation rate (RATIO_dosl)
 %   to various tissue parameters (T1D, R1a, R2a, R1b, MPF, R, T2b).
 %   Compares the exact numerical solution against the analytical approximation
 %   under different frequency offsets.
@@ -57,10 +57,10 @@ w1 = w1_val * 2 * pi;
 
 
 % =========================================================================
-% Part 1: Rdosl vs. T1D Analysis
+% Part 1: RATIO_dosl vs. T1D Analysis
 % =========================================================================
 fprintf('========================================\n');
-fprintf('Part 1: Calculating Rdosl vs T1D\n');
+fprintf('Part 1: Calculating RATIO_dosl vs T1D\n');
 fprintf('========================================\n');
 
 % T1D Range: 1ms to 10ms
@@ -69,8 +69,8 @@ n_t1d = length(T1d_all);
 n_dw = length(dw_all);
 
 % Pre-allocate result matrices
-Rdosl_exact_t1d = zeros(n_dw, n_t1d);
-Rdosl_approx_t1d = zeros(n_dw, n_t1d);
+RATIO_dosl_exact_t1d = zeros(n_dw, n_t1d);
+RATIO_dosl_approx_t1d = zeros(n_dw, n_t1d);
 
 fprintf('Fixed w1=%d Hz, calculating curves for different dw...\n', w1_val);
 
@@ -81,9 +81,9 @@ for i = 1:n_dw
     for j = 1:n_t1d
         curr_T1d = T1d_all(j);
         
-        Rdosl_exact_t1d(i, j) = cal_Rdosl_exact(R1a_base, R2a_base, R1b_base, ...
+        RATIO_dosl_exact_t1d(i, j) = cal_RATIO_dosl_exact(R1a_base, R2a_base, R1b_base, ...
             MPF_base, R_base, T2b_base,curr_T1d,curr_dw, w1);
-        Rdosl_approx_t1d(i, j) = cal_Rdosl_approx(R_base, T2b_base, curr_T1d, curr_dw,  w1, B1, B0);
+        RATIO_dosl_approx_t1d(i, j) = cal_RATIO_dosl_approx(R_base, T2b_base, curr_T1d, curr_dw,  w1, B1, B0);
     end
 end
 
@@ -101,7 +101,7 @@ R1a_range = linspace(0.38, 1.5, steps);
 R2a_range = linspace(10, 80, steps);
 R1b_range = linspace(2, 5, steps);
 MPF_range = linspace(0.1, 0.2, steps);
-R_range   = linspace(18, 25, steps);
+R_range   = linspace(15, 25, steps);
 T2b_range = linspace(9, 11, steps) * 1e-6;
 
 % Define parameter structure for iteration
@@ -153,9 +153,9 @@ for p = 1:6
         % Calculate for different dw
         for d = 1:n_dw
             dw = dw_all(d);
-            temp_exact(d, i) = cal_Rdosl_exact(c_R1a, c_R2a, c_R1b, c_MPF, ...
+            temp_exact(d, i) = cal_RATIO_dosl_exact(c_R1a, c_R2a, c_R1b, c_MPF, ...
                 c_R, c_T2b,c_T1d, dw, w1);
-            temp_approx(d, i) = cal_Rdosl_approx(c_R, c_T2b, c_T1d, dw, w1, B1,B0);
+            temp_approx(d, i) = cal_RATIO_dosl_approx(c_R, c_T2b, c_T1d, dw, w1, B1,B0);
         end
     end
     Results_Exact{p} = temp_exact;
@@ -165,17 +165,20 @@ end
 % =========================================================================
 % Visualization
 % =========================================================================
-
+fs_label = 22;  % x, y 轴标签字体大小
+fs_title = 20;  % 标题字体大小
+fs_tick  = 22;  % 坐标轴刻度字体大小
+fs_leg   = 12;  % 图例字体大小
 % General Plot Settings
-set(0, 'DefaultAxesFontSize', 12);
+set(0, 'DefaultAxesFontSize', fs_tick);
 set(0, 'DefaultAxesFontName', 'Arial');
 set(0, 'DefaultLineLineWidth', 1.5);
 colors = lines(n_dw);
 
 % -------------------------------------------------------------------------
-% Figure 1: Rdosl vs T1D
+% Figure 1: RATIO_dosl vs T1D
 % -------------------------------------------------------------------------
-figure('Color','w', 'Position', [100, 100, 500, 500]);
+figure('Color','w', 'Position', [100, 100, 600, 700]);
 hold on; box on; grid on;
 
 legend_str = cell(1, n_dw);
@@ -183,25 +186,25 @@ p_handles = zeros(1, n_dw);
 
 for i = 1:n_dw
     % Exact Solution (Solid Line)
-    p_handles(i) = plot(T1d_all*1000, Rdosl_exact_t1d(i,:), '-', ...
+    p_handles(i) = plot(T1d_all*1000, RATIO_dosl_exact_t1d(i,:), '-', ...
         'Color', colors(i,:), 'LineWidth', 2);
     
     % Approx Solution (Circle Markers)
     idx_sample = 1:1:length(T1d_all);
-    plot(T1d_all(idx_sample)*1000, Rdosl_approx_t1d(i,idx_sample), 'o', ...
+    plot(T1d_all(idx_sample)*1000, RATIO_dosl_approx_t1d(i,idx_sample), 'o', ...
         'Color', colors(i,:), 'MarkerFaceColor', 'w', 'MarkerSize', 6);
     
-    legend_str{i} = ['$\Delta\omega=' num2str(dw_vals(i)/1000) '\,\mathrm{kHz}$'];
+    legend_str{i} = ['$\Delta\omega^{d(1)}=' num2str(dw_vals(i)/1000) '\,\mathrm{kHz}$'];
 end
 
 xlim([1 10]);
 ylim([0 2]);
 
-xlabel('$T_{1D}$ (ms)', 'Interpreter', 'latex', 'FontSize', 18);
-ylabel('$R_{dosl}$ (Hz)', 'Interpreter', 'latex', 'FontSize', 18);
-title({['$R_{dosl}$ vs. $T_{1D}$'], ...
-       ['($\omega_1/2\pi = ' num2str(w1_val) '\,\mathrm{Hz}$)']}, ...
-       'Interpreter', 'latex', 'FontSize', 17);
+xlabel('$T_{1D}$ (ms)', 'Interpreter', 'latex', 'FontSize', fs_label);
+ylabel('$RATIO_{dosl}$', 'Interpreter', 'latex', 'FontSize',fs_label);
+title({['$RATIO_{dosl}$ vs. $T_{1D}$'], ...
+       ['($\omega_1^{d(1)}/2\pi = ' num2str(w1_val) '\,\mathrm{Hz}$)']}, ...
+       'Interpreter', 'latex', 'FontSize', fs_title );
 
 % Dual Legend Setup
 h_line = plot(nan, nan, 'k-', 'LineWidth', 2);
@@ -223,8 +226,8 @@ leg2.Position = [leg1_pos(1), ...
 % Figure 2: Sensitivity Analysis (6 Subplots)
 % -------------------------------------------------------------------------
 figure('Color','w', 'Position', [150, 50, 1200, 700]);
-sgtitle(['Sensitivity Analysis of $R_{dosl}$ ($\omega_1/2\pi = ' num2str(w1_val) '\,\mathrm{Hz}$)'], ...
-    'Interpreter', 'latex', 'FontSize', 16, 'FontWeight', 'bold');
+sgtitle(['Sensitivity Analysis of $RATIO_{dosl}$ ($\omega_1^{d(1)}/2\pi = ' num2str(w1_val) '\,\mathrm{Hz}$)'], ...
+    'Interpreter', 'latex', 'FontSize', fs_title, 'FontWeight', 'bold');
 
 lw = 2;
 
@@ -261,10 +264,10 @@ for p = 1:6
     xlim([min(x_vals) * x_scale, max(x_vals) * x_scale]);
     ylim([0 1.3]);
     
-    set(gca, 'FontSize', 14, 'FontWeight','normal');
+    set(gca, 'FontSize', fs_tick, 'FontWeight','normal');
     
-    xlabel(xlabel_str, 'Interpreter', 'latex', 'FontSize', 22, 'FontWeight','bold');
-    ylabel('$R_{dosl}$ (Hz)', 'Interpreter', 'latex', 'FontSize', 22, 'FontWeight','bold');
+    xlabel(xlabel_str, 'Interpreter', 'latex', 'FontSize', fs_label, 'FontWeight','bold');
+    ylabel('$RATIO_{dosl}$', 'Interpreter', 'latex', 'FontSize', fs_label, 'FontWeight','bold');
 end
 
 fprintf('\n========================================\n');
