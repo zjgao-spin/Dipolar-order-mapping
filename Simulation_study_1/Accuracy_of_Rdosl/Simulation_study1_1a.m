@@ -1,6 +1,6 @@
 % -------------------------------------------------------------------------
 % Script:       RATIO_dosl_Simulation_Validation
-% Authors:      Zijian Gao, Qianxue Shan, Ziqiang Yu, Weitian Chen
+% Authors:      Zijian Gao, Qianxue Shan, Weitian Chen
 % Email:        zijian.gao@link.cuhk.edu.hk
 % Date:         2025-12-19
 % Version:      1.0
@@ -253,4 +253,5 @@ ylabel('Frequency Offset $\Delta\omega^{d(1)}/2\pi$ (kHz)', 'Interpreter', 'late
 title(['Relative Error Map ($T_{1D} = ' num2str(T1d_map*1000) '\,\mathrm{ms}$)'], 'Interpreter', 'latex', 'FontSize', fs_title);
 %subtitle('White dashed line indicates 1% error boundary','FontSize', 8);
 axis tight;
+
 
