@@ -183,18 +183,8 @@ legend('$T_{1D}$(analytical)', '$T_{1D}$(dictionary)', 'Ground Truth', 'Location
 set(gca, 'FontSize', fontSize_axis);
 grid on
 
-% % Plot 2: Interquartile Range 
-% subplot(1,3,2); hold on; box on;
-% plot(SNR_all, Results.Analyt.iqr*100, '-', 'Color', color_NLS, 'LineWidth', LineW);
-% plot(SNR_all, Results.Dic.iqr*100, '-', 'Color', color_Dic, 'LineWidth', LineW);
-% xlabel('SNR', 'FontSize', fontSize_label); 
-% ylabel('Interquartile Range (ms)', 'FontSize', fontSize_label);
-% xlim([min(SNR_all), max(SNR_all)])
-% title('Interquartile Range', 'FontSize', fontSize_title);
-% set(gca, 'FontSize', fontSize_axis);
-% grid on
 
-% Plot 3: Relative Bias
+% Plot 2: Relative Bias
 subplot(1,2,2); hold on; box on;
 plot(SNR_all, Results.Analyt.bias_pct, '-', 'Color', color_NLS, 'LineWidth', LineW);
 plot(SNR_all, Results.Dic.bias_pct, '-', 'Color', color_Dic, 'LineWidth', LineW);
@@ -206,17 +196,3 @@ grid on
 xlim([min(SNR_all), max(SNR_all)])
 ylim([0 30])
 
-% % Plot 4: Coefficient of Variation
-% subplot(1,4,4); hold on; box on;
-% plot(SNR_all, Results.Analyt.cv, '-', 'Color', color_NLS, 'LineWidth', LineW);
-% plot(SNR_all, Results.Dic.cv, '-', 'Color', color_Dic, 'LineWidth', LineW);
-% xlabel('SNR', 'FontSize', fontSize_label); 
-% ylabel('Coefficient of Variation', 'FontSize', fontSize_label);
-% title('Coefficient of Variation', 'FontSize', fontSize_title);
-% set(gca, 'FontSize', fontSize_axis);
-% grid on
-% xlim([min(SNR_all), max(SNR_all)])
-
-% Save figure (Optional)
-% saveas(fig, 'Sensitivity_Analysis.png');
-% fprintf('Figure saved as Sensitivity_Analysis.png and .fig\n');
