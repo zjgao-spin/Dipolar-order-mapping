@@ -5,7 +5,7 @@
 % Date:         2025-12-19
 % Version:      1.0
 %
-% Copyright (c) 2025  ZZijian Gao, Qianxue Shan, Weitian Chen. All rights reserved.
+% Copyright (c) 2025  Zijian Gao, Qianxue Shan, Weitian Chen. All rights reserved.
 %
 % License:
 %   Strictly for academic/research use only. Commercial use, redistribution,
@@ -60,7 +60,7 @@ w1_base = 500 * 2 * pi; % Spin-lock frequency (rad/s)
 dw_base = 5000 * 2 * pi;% Off-resonance frequency (rad/s)
 
 % Simulation settings
-SNR_all = (20:1:100);  % Range of SNR values to test
+SNR_all = (1:1:100);  % Range of SNR values to test
 N_size = 100000;         % Number of Monte Carlo iterations
 method_names = {'Analyt', 'Dic'};
 
@@ -82,13 +82,13 @@ for i = 1:length(SNR_all)
     
     SNR = SNR_all(i);
     
-    % Initialize temporary storage for noisy Rdosl generation
-    Rdosl = zeros(1, N_size);
+    % Initialize temporary storage for noisy RATIO_dosl generation
+    RATIO_dosl = zeros(1, N_size);
     
-    % ====== Key Modification: Generate Rdosl only once per SNR level ======
+    % ====== Key Modification: Generate RATIO_dosl only once per SNR level ======
     % This ensures both methods are tested against the exact same noise realization
     parfor i_N = 1:N_size
-        Rdosl(i_N) = cal_Rdosl_acquired(R1a, R2a, R1b, MPF, R, T2b, T1d, ...
+        RATIO_dosl(i_N) = cal_RATIO_dosl_acquired(R1a, R2a, R1b, MPF, R, T2b, T1d, ...
                                         dw_base, w1_base, TSL, B1, B0, SNR);
     end
     
@@ -99,7 +99,7 @@ for i = 1:length(SNR_all)
         % Initialize storage (only on the first iteration of the SNR loop)
         if i == 1
             Results.(method_name).SNR = SNR_all;
-            Results.(method_name).Rdosl = zeros(length(SNR_all), N_size);
+            Results.(method_name).RATIO_dosl = zeros(length(SNR_all), N_size);
             Results.(method_name).T1d_est = zeros(length(SNR_all), N_size);
             Results.(method_name).median_est = zeros(1, length(SNR_all)); % Renamed from 'mean'
             Results.(method_name).iqr = zeros(1, length(SNR_all));         % Renamed from 'std' to match calculation
@@ -107,8 +107,8 @@ for i = 1:length(SNR_all)
             Results.(method_name).cv = zeros(1, length(SNR_all));
         end
         
-        % Store the generated Rdosl data for record-keeping
-        Results.(method_name).Rdosl(i, :) = Rdosl;
+        % Store the generated RATIO_dosl data for record-keeping
+        Results.(method_name).RATIO_dosl(i, :) = RATIO_dosl;
         
         % Temporary vector for current SNR iteration results
         T1d_temp_vec = zeros(1, N_size);
@@ -117,12 +117,12 @@ for i = 1:length(SNR_all)
         parfor j = 1:N_size
             if method_idx == 1
                 % Method 1: Analytical Solution (Non-Linear Least Squares usually)
-                [T1d_val, ~] = cal_T1d_analytical(Rdosl(j), B1, B0);
+                [T1d_val, ~] = cal_T1d_analytical(RATIO_dosl(j), B1, B0);
                 T1d_temp_vec(j) = T1d_val;
             else
                 % Method 2: Dictionary Matching
                 % Note: 'all_jtmt' and 'var_T1d' must be loaded from the .mat file
-                yy_check = abs(Rdosl(j) - all_jtmt(:));
+                yy_check = abs(RATIO_dosl(j) - all_jtmt(:));
                 num_T1d = find(yy_check == min(yy_check), 1); % Take only the first minimum index
                 T1d_val = var_T1d(num_T1d);
                 T1d_temp_vec(j) = T1d_val;
@@ -163,39 +163,39 @@ fontSize_title = 16;     % Title font size
 fontSize_legend = 12;    % Legend font size
 LineW = 2.5;             % Line width
 
-fig = figure('Name', 'Sensitivity Analysis', 'Position', [100, 100, 1800, 400]);
+fig = figure('Name', 'Sensitivity Analysis', 'Position', [100, 100, 1400, 500]);
 
 % Define colors
 color_NLS = [0, 0.4470, 0.7410];      % Blue (Analytical)
 color_Dic = [0.8500, 0.3250, 0.0980]; % Red (Dictionary)
 
 % Plot 1: Median Estimate
-subplot(1,4,1); hold on; box on;
+subplot(1,2,1); hold on; box on;
 plot(SNR_all, Results.Analyt.median_est*1000, '-', 'Color', color_NLS, 'LineWidth', LineW);
 plot(SNR_all, Results.Dic.median_est*1000, '-', 'Color', color_Dic, 'LineWidth', LineW);
 yline(T1d_base*1000, 'k--', 'LineWidth', LineW);
 ylim([5.5 8]);
 xlim([min(SNR_all), max(SNR_all)]);
 xlabel('SNR', 'FontSize', fontSize_label); 
-ylabel('Estimated T_{1D} (ms)', 'FontSize', fontSize_label);
+ylabel('Estimated $T_{1D}$ (ms)', 'FontSize', fontSize_label);
 title('Median Estimate', 'FontSize', fontSize_title);
-legend('T_{1D}-Analyt', 'T_{1D}-Dic', 'Ground Truth', 'Location', 'best', 'FontSize', fontSize_legend);
+legend('$T_{1D}$(analytical)', '$T_{1D}$(dictionary)', 'Ground Truth', 'Location', 'best', 'FontSize', fontSize_legend);
 set(gca, 'FontSize', fontSize_axis);
 grid on
 
-% Plot 2: Interquartile Range 
-subplot(1,4,2); hold on; box on;
-plot(SNR_all, Results.Analyt.iqr*100, '-', 'Color', color_NLS, 'LineWidth', LineW);
-plot(SNR_all, Results.Dic.iqr*100, '-', 'Color', color_Dic, 'LineWidth', LineW);
-xlabel('SNR', 'FontSize', fontSize_label); 
-ylabel('Interquartile Range (ms)', 'FontSize', fontSize_label);
-xlim([min(SNR_all), max(SNR_all)])
-title('Interquartile Range', 'FontSize', fontSize_title);
-set(gca, 'FontSize', fontSize_axis);
-grid on
+% % Plot 2: Interquartile Range 
+% subplot(1,3,2); hold on; box on;
+% plot(SNR_all, Results.Analyt.iqr*100, '-', 'Color', color_NLS, 'LineWidth', LineW);
+% plot(SNR_all, Results.Dic.iqr*100, '-', 'Color', color_Dic, 'LineWidth', LineW);
+% xlabel('SNR', 'FontSize', fontSize_label); 
+% ylabel('Interquartile Range (ms)', 'FontSize', fontSize_label);
+% xlim([min(SNR_all), max(SNR_all)])
+% title('Interquartile Range', 'FontSize', fontSize_title);
+% set(gca, 'FontSize', fontSize_axis);
+% grid on
 
 % Plot 3: Relative Bias
-subplot(1,4,3); hold on; box on;
+subplot(1,2,2); hold on; box on;
 plot(SNR_all, Results.Analyt.bias_pct, '-', 'Color', color_NLS, 'LineWidth', LineW);
 plot(SNR_all, Results.Dic.bias_pct, '-', 'Color', color_Dic, 'LineWidth', LineW);
 xlabel('SNR', 'FontSize', fontSize_label); 
@@ -206,16 +206,16 @@ grid on
 xlim([min(SNR_all), max(SNR_all)])
 ylim([0 30])
 
-% Plot 4: Coefficient of Variation
-subplot(1,4,4); hold on; box on;
-plot(SNR_all, Results.Analyt.cv, '-', 'Color', color_NLS, 'LineWidth', LineW);
-plot(SNR_all, Results.Dic.cv, '-', 'Color', color_Dic, 'LineWidth', LineW);
-xlabel('SNR', 'FontSize', fontSize_label); 
-ylabel('CV (IQR / Median)', 'FontSize', fontSize_label);
-title('Coefficient of Variation', 'FontSize', fontSize_title);
-set(gca, 'FontSize', fontSize_axis);
-grid on
-xlim([min(SNR_all), max(SNR_all)])
+% % Plot 4: Coefficient of Variation
+% subplot(1,4,4); hold on; box on;
+% plot(SNR_all, Results.Analyt.cv, '-', 'Color', color_NLS, 'LineWidth', LineW);
+% plot(SNR_all, Results.Dic.cv, '-', 'Color', color_Dic, 'LineWidth', LineW);
+% xlabel('SNR', 'FontSize', fontSize_label); 
+% ylabel('Coefficient of Variation', 'FontSize', fontSize_label);
+% title('Coefficient of Variation', 'FontSize', fontSize_title);
+% set(gca, 'FontSize', fontSize_axis);
+% grid on
+% xlim([min(SNR_all), max(SNR_all)])
 
 % Save figure (Optional)
 % saveas(fig, 'Sensitivity_Analysis.png');
