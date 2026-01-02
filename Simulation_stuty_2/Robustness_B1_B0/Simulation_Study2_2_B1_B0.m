@@ -1,6 +1,6 @@
 % -------------------------------------------------------------------------
 % Script:       T1D_Estimation.m
-% Authors:      Zijian Gao,Weitian Chen
+% Authors:      Zijian Gao,Qianxue Shan,Weitian Chen
 % Email:        zijian.gao@link.cuhk.edu.hk
 % Date:         2025-12-20
 % Version:      1.0
