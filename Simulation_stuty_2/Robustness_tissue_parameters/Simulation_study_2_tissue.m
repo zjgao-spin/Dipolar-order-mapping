@@ -1,11 +1,11 @@
 % -------------------------------------------------------------------------
-% Script:       Simulation_study2_tissue.m
-% Authors:      Zijian Gao,Qianxue Shan,Weitian Chen
+% Script:       T1D_Estimation.m
+% Authors:      Zijian Gao,Weitian Chen
 % Email:        zijian.gao@link.cuhk.edu.hk
 % Date:         2025-12-20
 % Version:      1.0
 %
-% Copyright (c) 2025  ZZijian Gao, Qianxue Shan, Weitian Chen. All rights reserved.
+% Copyright (c) 2025  Zijian Gao, Qianxue Shan, Weitian Chen. All rights reserved.
 %
 % License:
 %   Strictly for academic/research use only. Commercial use, redistribution,
@@ -19,7 +19,7 @@
 % 
 % Dependencies:
 %   - T1d_dictionary.mat (Pre-calculated dictionary)
-%   - cal_Rdosl_acquired.m      (Forward model function)
+%   - cal_RATIO_dosl_acquired.m      (Forward model function)
 %   - cal_T1d_analytical.m      (Inverse analytical function)
 %   - cal_T1d_dictionary.m      (Inverse dictionary function)
 % -------------------------------------------------------------------------
@@ -87,7 +87,7 @@ R_rand   = range_R(1)   + (range_R(2)-range_R(1))   * rand(num_sims, 1);
 
 % Pre-allocate memory for results (Optimization)
 Results_MC = struct();
-Results_MC.Rdosl      = zeros(1, num_sims); % Observed R1rho
+Results_MC.RATIO_dosl      = zeros(1, num_sims); % Observed R1rho
 Results_MC.T1d_Analyt = zeros(1, num_sims); % Estimated T1d (Analytical)
 Results_MC.T1d_Dic    = zeros(1, num_sims); % Estimated T1d (Dictionary)
 
@@ -106,27 +106,27 @@ for i = 1:num_sims
     p_R   = R_rand(i);
     
     % ---------------------------------------------------------------------
-    % A. Forward Model: Generate "Observed" R1rho (Rdosl)
+    % A. Forward Model: Generate "Observed" R1rho (RATIO_dosl)
     % ---------------------------------------------------------------------
     % Note: T1d is fixed at T1d_base (Ground Truth) for this study
-    Rdosl = cal_Rdosl_acquired(R1a_base, R2a_base, p_R1b, p_MPF, p_R, ...
+    RATIO_dosl = cal_RATIO_dosl_acquired(R1a_base, R2a_base, p_R1b, p_MPF, p_R, ...
                                T2b_base, T1d_base, dw_base, w1_base, ...
                                TSL, B1_base, B0_base);    
 
-    % Store observed Rdosl
-    Results_MC.Rdosl(i) = Rdosl;
+    % Store observed RATIO_dosl
+    Results_MC.RATIO_dosl(i) = RATIO_dosl;
 
     % ---------------------------------------------------------------------
     % B. Inverse Model: Estimate T1d
     % ---------------------------------------------------------------------
     
     % Method 1: Analytical Solution
-   % [T1d_val, ~] = cal_T1d_analytical_direct(Rdosl, B1_base, B0_base);
-    [T1d_val, ~] = cal_T1d_analytical(Rdosl, B1_base, B0_base);
+   % [T1d_val, ~] = cal_T1d_analytical_direct(RATIO_dosl, B1_base, B0_base);
+    [T1d_val, ~] = cal_T1d_analytical(RATIO_dosl, B1_base, B0_base);
     Results_MC.T1d_Analyt(i) = T1d_val;   
 
     % Method 2: Dictionary Matching
-    T1D_dic_val = cal_T1d_dictionary(Rdosl, B1_base, dictionary);
+    T1D_dic_val = cal_T1d_dictionary(RATIO_dosl, B1_base, dictionary);
     Results_MC.T1d_Dic(i) = T1D_dic_val; 
     
 end
@@ -140,9 +140,9 @@ fprintf('Simulation finished in %.2f seconds.\n', sim_time);
 % =========================================================================
 
 % --- 4.1 Observed Signal Statistics ---
-Vals_Rdosl = Results_MC.Rdosl;
-Stats.Rdosl.mean = mean(Vals_Rdosl);
-Stats.Rdosl.std  = std(Vals_Rdosl);
+Vals_RATIO_dosl = Results_MC.RATIO_dosl;
+Stats.RATIO_dosl.mean = mean(Vals_RATIO_dosl);
+Stats.RATIO_dosl.std  = std(Vals_RATIO_dosl);
 
 % --- 4.2 T1d Estimation Performance ---
 % Ground Truth
@@ -180,7 +180,7 @@ targets = [1, fileID];
 
 for fid = targets
     print_both(fid, '\n--- Observed Signal Statistics ---\n');
-    print_both(fid, 'Rdosl: Mean = %.4f Hz, Std = %.4f Hz\n', Stats.Rdosl.mean, Stats.Rdosl.std);
+    print_both(fid, 'RATIO_dosl (R1rho): Mean = %.4f Hz, Std = %.4f Hz\n', Stats.RATIO_dosl.mean, Stats.RATIO_dosl.std);
     
     print_both(fid, '\n--- T1d Estimation Performance Analysis ---\n');
     print_both(fid, '\n================================================================\n');
@@ -199,5 +199,3 @@ end
 
 fclose(fileID); % Close the file
 fprintf('\nResults saved to: %s\n', output_filename);
-
-
