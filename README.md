@@ -4,7 +4,7 @@ This repository contains MATLAB simulation code for the paper:
 
 "Dipolar order mapping based on spin-lock magnetic resonance imaging"
 Authors: Zijian Gao, Qianxue Shan,Ziqin Zhou, Ziqiang Yu,Weitian Chen
-https://arxiv.org/abs/2510.02847
+https://doi.org/10.1002/nbm.70331
 
 
 # License
